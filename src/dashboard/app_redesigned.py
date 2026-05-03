@@ -75,43 +75,46 @@ COLORS = {
 
 # CSS for micro animations
 STYLES = '''
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(248, 81, 73, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
-}
-
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
-}
-
-@keyframes slide-in {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.pulse-alert {
-    animation: pulse 2s infinite;
-}
-
-.blink-icon {
-    animation: blink 1.5s infinite;
-}
-
-.alert-item {
-    animation: slide-in 0.3s ease-out;
-}
-
-body {
-    background-color: #0d1117;
-    color: #e6edf3;
-}
+<style>
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(248, 81, 73, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+    }
+    
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0.3; }
+    }
+    
+    @keyframes slide-in {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .pulse-alert {
+        animation: pulse 2s infinite;
+    }
+    
+    .blink-icon {
+        animation: blink 1.5s infinite;
+    }
+    
+    .alert-item {
+        animation: slide-in 0.3s ease-out;
+    }
+    
+    body {
+        background-color: #0d1117;
+        color: #e6edf3;
+    }
+</style>
 '''
 
 # ==================== LAYOUT ====================
 
 app.layout = html.Div([
+    html.Div(dangerously_allow_html=True, children=STYLES),
     dcc.Interval(id='interval', interval=500),
     
     html.Div(style={'backgroundColor': COLORS['bg'], 'minHeight': '100vh', 'padding': '24px'}, children=[
@@ -303,43 +306,29 @@ app.layout = html.Div([
                 'padding': '20px',
                 'backgroundColor': COLORS['surface'],
                 'borderRadius': '12px',
-                'border': f'2px solid {COLORS["primary"]}',
+                'border': f'1px solid {COLORS["border"]}',
             }, children=[
                 html.H3('System Architecture', style={
-                    'margin': '0 0 20px 0',
-                    'fontSize': '15px',
+                    'margin': '0 0 16px 0',
+                    'fontSize': '14px',
                     'fontWeight': '600',
-                    'color': COLORS['primary'],
-                    'textTransform': 'uppercase',
-                    'letterSpacing': '0.5px',
+                    'color': COLORS['accent'],
                 }),
                 html.Div(style={
                     'display': 'flex',
-                    'justifyContent': 'center',
+                    'justifyContent': 'space-between',
                     'alignItems': 'center',
-                    'gap': '20px',
-                    'padding': '24px 16px',
-                    'backgroundColor': f'rgba(88, 166, 255, 0.08)',
+                    'padding': '16px',
+                    'backgroundColor': 'rgba(88, 166, 255, 0.05)',
                     'borderRadius': '8px',
-                    'flexWrap': 'wrap',
                 }, children=[
-                    html.Div('🌐', style={'fontSize': '24px', 'textAlign': 'center'}),
-                    html.Div('Network Traffic', style={'fontSize': '13px', 'fontWeight': '500', 'color': COLORS['text']}),
-                    
-                    html.Div('→', style={'color': COLORS['primary'], 'fontSize': '20px', 'fontWeight': 'bold'}),
-                    
-                    html.Div('📦', style={'fontSize': '24px', 'textAlign': 'center'}),
-                    html.Div('Packet Inspection', style={'fontSize': '13px', 'fontWeight': '500', 'color': COLORS['text']}),
-                    
-                    html.Div('→', style={'color': COLORS['primary'], 'fontSize': '20px', 'fontWeight': 'bold'}),
-                    
-                    html.Div('🔍', style={'fontSize': '24px', 'textAlign': 'center'}),
-                    html.Div('Anomaly Detection', style={'fontSize': '13px', 'fontWeight': '500', 'color': COLORS['text']}),
-                    
-                    html.Div('→', style={'color': COLORS['danger'], 'fontSize': '20px', 'fontWeight': 'bold'}),
-                    
-                    html.Div('📊', style={'fontSize': '24px', 'textAlign': 'center'}),
-                    html.Div('Alert Dashboard', style={'fontSize': '13px', 'fontWeight': '500', 'color': COLORS['danger']}),
+                    html.Div('🌐 Network Traffic', style={'fontSize': '13px', 'fontWeight': '500'}),
+                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px'}),
+                    html.Div('📦 Packet Inspection', style={'fontSize': '13px', 'fontWeight': '500'}),
+                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px'}),
+                    html.Div('🔍 Anomaly Detection', style={'fontSize': '13px', 'fontWeight': '500'}),
+                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px'}),
+                    html.Div('📊 Alert Dashboard', style={'fontSize': '13px', 'fontWeight': '500', 'color': COLORS['danger']}),
                 ])
             ]),
             
@@ -462,42 +451,21 @@ def update_metrics(n):
     try:
         db = get_alert_db()
         total, high, top_ips = 0, 0, []
-        pps = 0
         
         if db:
             stats = db.get_statistics()
             total = stats.get('total_alerts', 0)
             high = stats.get('by_severity', {}).get('HIGH', 0)
             top_ips = stats.get('top_ips', [])
-            by_type = stats.get('by_type', {})
-            
-            # Calculate realistic packet rate from attack types
-            # Each attack type generates a known number of packets
-            packet_estimates = {
-                'SYN_FLOOD': 60,      # 60 packets per alert
-                'UDP_FLOOD': 120,     # 120 packets per alert
-                'PING_FLOOD': 30,     # 30 packets per alert
-                'PORT_SCAN': 10,      # ~10 packets per alert (multi-port)
-                'SUSPICIOUS_PORTS': 5,
-                'UNUSUAL_PACKET_RATE': 100,
-            }
-            
-            # Estimate total packets from alerts
-            total_packets = 0
-            for attack_type, count in by_type.items():
-                packets_per = packet_estimates.get(attack_type, 5)
-                total_packets += packets_per * count
-            
-            # Assume packets were generated over last 60 seconds for realistic rate
-            pps = max(total_packets // 60, 0) if total > 0 else 0
-            
         elif alert_generator:
             stats = alert_generator.get_alert_statistics()
             total = stats.get('total_alerts', 0)
             high = stats.get('by_severity', {}).get('HIGH', 0)
             top_ips = alert_generator.get_top_suspicious_ips(5) or []
-            # Estimate from alerts
-            pps = max(total * 2, 0)  # Rough estimate
+        
+        pps = 0
+        if packet_capture:
+            pps = packet_capture.get_statistics().get('packets_per_sec', 0)
         
         status = '🟢 Monitoring'
         color = COLORS['success']
@@ -578,7 +546,8 @@ def update_alert_stream(n):
                     'borderRadius': '4px',
                     'fontSize': '13px',
                     'fontFamily': '"Courier New", monospace',
-                }
+                },
+                className='alert-item'
             ))
         
         return elements
