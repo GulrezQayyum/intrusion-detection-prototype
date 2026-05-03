@@ -1,0 +1,121 @@
+
+======================================================================
+  🔒 IDS PROTOTYPE - DETECTION ENGINE DEMO
+======================================================================
+
+Start Time: 2026-05-03 16:41:28
+
+
+📦 Initializing IDS Components
+----------------------------------------------------------------------
+✓ Detection Rules Engine initialized
+✓ Alert Generator initialized
+
+⚙️ Active Detection Rules
+----------------------------------------------------------------------
+  • SYN_FLOOD
+    Threshold: 50
+    Severity: HIGH
+    Time Window: 10s
+  • PORT_SCAN
+    Threshold: 5
+    Severity: HIGH
+    Time Window: 10s
+  • PING_FLOOD
+    Threshold: 20
+    Severity: MEDIUM
+    Time Window: 10s
+  • UDP_FLOOD
+    Threshold: 100
+    Severity: MEDIUM
+    Time Window: 5s
+  • UNUSUAL_PACKET_RATE
+    Threshold: 1000
+    Severity: LOW
+
+🚨 DEMO 1: SYN FLOOD ATTACK SIMULATION
+----------------------------------------------------------------------
+Simulating 60 SYN packets from 203.0.113.50...
+
+✅ ATTACK DETECTED!
+   Type: SYN_FLOOD
+   Severity: 🔴 HIGH
+   Message: Possible SYN flood from 203.0.113.50 (60 packets in 10s)
+   Source IP: 203.0.113.50
+
+🚨 DEMO 2: PORT SCAN ATTACK SIMULATION
+----------------------------------------------------------------------
+Simulating port scan from 198.51.100.75 targeting 10 different ports...
+
+✅ ATTACK DETECTED!
+   Type: PORT_SCAN
+   Severity: 🔴 HIGH
+   Message: Possible port scan from 198.51.100.75 (10 different ports)
+   Source IP: 198.51.100.75
+   Ports Scanned: [22, 80, 443, 3306, 5432, 8080, 8443, 9000, 9200, 27017]
+
+🚨 DEMO 3: PING FLOOD ATTACK SIMULATION
+----------------------------------------------------------------------
+Simulating 30 ICMP (ping) packets from 192.0.2.100...
+
+✅ ATTACK DETECTED!
+   Type: PING_FLOOD
+   Severity: 🟡 MEDIUM
+   Message: Possible ping flood from 192.0.2.100 (30 ICMP packets in 10s)
+   Source IP: 192.0.2.100
+
+🚨 DEMO 4: UDP FLOOD ATTACK SIMULATION
+----------------------------------------------------------------------
+Simulating 120 UDP packets from 192.0.2.150...
+
+✅ ATTACK DETECTED!
+   Type: UDP_FLOOD
+   Severity: 🟡 MEDIUM
+   Message: Possible UDP flood from 192.0.2.150 (120 UDP packets in 5s)
+   Source IP: 192.0.2.150
+
+✅ DEMO 5: NORMAL TRAFFIC (Baseline Test)
+----------------------------------------------------------------------
+Simulating 2 normal traffic packets...
+
+✅ NO ALERTS (Correct!)
+   Normal traffic is not flagged as suspicious
+
+📊 DETECTION ENGINE SUMMARY
+----------------------------------------------------------------------
+Total Attacks Simulated: 220
+Total Alerts Generated: 45
+Detection Accuracy: ✅ 100% (All 4 attack types detected)
+
+Alerts by Type:
+  • PING_FLOOD: 10 alert(s)
+  • PORT_SCAN: 5 alert(s)
+  • SYN_FLOOD: 10 alert(s)
+  • UDP_FLOOD: 20 alert(s)
+
+Alerts by Severity:
+  🔴 HIGH:   15 alert(s)
+  🟡 MEDIUM: 30 alert(s)
+  🟢 LOW:    0 alert(s)
+
+🎯 TOP SUSPICIOUS IP ADDRESSES
+----------------------------------------------------------------------
+  1. 192.0.2.150          - 20 alert(s)
+  2. 203.0.113.50         - 10 alert(s)
+  3. 192.0.2.100          - 10 alert(s)
+  4. 198.51.100.75        - 5 alert(s)
+
+✅ SYSTEM STATUS
+----------------------------------------------------------------------
+✓ Packet Capture Module:    Ready (captures 100 packets)
+✓ Detection Rules Engine:   Ready (6 detection rules)
+✓ Alert Generation:         Ready (real-time monitoring)
+✓ Alert Storage:            Ready (stores up to 500 alerts)
+✓ Logging & Export:         Ready (CSV export available)
+
+======================================================================
+  🎉 DEMO COMPLETE - Ready for Step 3: Dashboard
+======================================================================
+
+End Time: 2026-05-03 16:41:28
+
