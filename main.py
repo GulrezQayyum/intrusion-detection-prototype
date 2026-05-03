@@ -1,6 +1,12 @@
 """
-IDS Prototype - Main Integration Demo
-Shows packet capture + detection engine + alert generation working together
+IDS Prototype - Complete System Integration
+Master script for Intrusion Detection System with all components
+- Packet Capture
+- Detection Engine
+- Alert Generation
+- Database Logging
+- Attack Simulator
+- Dash Dashboard
 """
 
 import sys
@@ -11,6 +17,8 @@ from datetime import datetime
 from src.capture.sniffer import PacketCapture
 from src.detection.rules import DetectionRules
 from src.dashboard.callbacks import AlertGenerator
+from src.utils.database import DatabaseIntegration
+from src.utils.attack_simulator import AttackSimulator
 
 # Configure logging
 logging.basicConfig(
@@ -53,6 +61,11 @@ def demo_with_simulated_packets():
     packet_capture = PacketCapture(interface=None, packet_buffer_size=100)
     alert_gen = AlertGenerator(packet_capture, detection_rules)
     print("✓ Alert Generator initialized")
+    
+    # Initialize database for persistence
+    from src.logs.alerts import AlertDatabase
+    alert_db = AlertDatabase()
+    print("✓ Alert Database initialized")
     
     # Print detection rules configuration
     print_section("⚙️ Active Detection Rules")
@@ -252,7 +265,13 @@ def demo_with_simulated_packets():
     
     all_attacks = syn_alerts + port_scan_alerts + ping_alerts + udp_alerts
     
-    print(f"Total Attacks Simulated: {len(syn_flood_packets) + len(port_scan_packets) + len(ping_flood_packets) + len(udp_flood_packets)}")
+    # Save all alerts to database for dashboard display
+    print("\n💾 Persisting alerts to database...")
+    if all_attacks:
+        alert_db.log_multiple_alerts(all_attacks)
+        print(f"✓ Saved {len(all_attacks)} alerts to database")
+    
+    print(f"\nTotal Attacks Simulated: {len(syn_flood_packets) + len(port_scan_packets) + len(ping_flood_packets) + len(udp_flood_packets)}")
     print(f"Total Alerts Generated: {len(all_attacks)}")
     print(f"Detection Accuracy: ✅ 100% (All 4 attack types detected)")
     
