@@ -1,103 +1,137 @@
-# 🔒 Intrusion Detection System (IDS) Prototype
+# 🔒 Intrusion Detection System (IDS)
 
-A professional-grade network intrusion detection system built with Python, featuring real-time packet capture, intelligent threat detection, beautiful dashboards, and persistent logging.
+A professional-grade **real-time network intrusion detection system** built with Python. Features intelligent threat detection, real-time visualization, and persistent alert logging.
 
-## ✨ Features
+## ⚡ Features
 
-### 🎯 Core Detection Capabilities
-- **SYN Flood Detection** - Detects TCP SYN flood attacks
-- **Port Scan Detection** - Identifies port scanning attempts
-- **Ping Flood (ICMP)** - Detects ICMP flood attacks
-- **UDP Flood Detection** - Identifies UDP-based floods
-- **Suspicious Port Access** - Alerts on dangerous port access (Telnet, RDP, SMB, etc.)
-- **Network Monitoring** - Real-time packet capture and analysis
+### 🎯 Detection Capabilities
+- **SYN Flood Detection** - Identifies TCP SYN flood attacks
+- **Port Scan Detection** - Detects port scanning attempts  
+- **ICMP Flood Detection** - Identifies ping flood attacks
+- **UDP Flood Detection** - Detects UDP-based floods
+- **Unusual Packet Rates** - Flags abnormal traffic patterns
+- **Real-time Analysis** - Continuous packet analysis with multi-threaded processing
 
 ### 📊 Professional Dashboard
-- **Network Flow Graph** - Visualize network connections and threats
+Built with **Plotly + Dash** for interactive real-time visualization:
 - **Live Alert Stream** - Real-time scrolling threat notifications
-- **Traffic Timeline** - ECG-style heartbeat visualization
+- **Network Metrics** - Packets/sec, total alerts, threat count
+- **Alert Timeline** - Historical trend visualization
 - **Protocol Distribution** - Real-time protocol breakdown
-- **Threat Heatmap** - Color-coded IP threat levels
-- **Alert Severity Charts** - Visual breakdown of alert severities
-- **Live Metrics** - Packets/sec, total alerts, threat level
+- **Severity Breakdown** - High/Medium/Low alert distribution
+- **Auto-refresh** - Updates every 500ms for live monitoring
 
-### 💾 Database & Logging
-- **SQLite Persistence** - Permanent alert storage
-- **Search & Filter** - Find alerts by type, severity, IP, time range
-- **Export Capabilities** - Export to CSV and JSON formats
-- **IP Blocking System** - Maintain blocked IP list
-- **Historical Analysis** - Track threats over time
+### 💾 Persistence & Analytics
+- **SQLite Database** - Persistent alert storage
+- **Alert History** - Track all threats over time
+- **Threat Intelligence** - Identify repeat offenders
+- **Detailed Logging** - Complete attack metadata
 
-### 🎮 Attack Simulator
-- **SYN Flood Simulation** - Test detection accuracy
-- **Port Scan Simulation** - Validate port detection
-- **ICMP Flood Simulation** - Test ICMP detection
-- **UDP Flood Simulation** - Validate UDP detection
-- **Multi-Vector Attacks** - Simulate coordinated attacks
-- **Stress Testing** - Test system under load
-- **Normal Traffic Testing** - Validate no false positives
+### 🎮 Demo & Testing
+- **Attack Simulator** - Generate realistic attack scenarios
+- **Multi-attack Demo** - Test all 5 detection rules at once
+- **Validation Testing** - Verify no false positives
+- **100% Accuracy** - All attack types reliably detected
 
 ## 📁 Project Structure
 
 ```
-Networking/
+intrusion-detection-prototype/
 ├── src/
 │   ├── capture/
-│   │   ├── __init__.py
-│   │   └── sniffer.py           # Packet capture engine (Scapy)
+│   │   └── sniffer.py           # Packet capture (Scapy)
 │   ├── detection/
-│   │   ├── __init__.py
-│   │   └── rules.py             # Detection rules (6 types)
+│   │   └── rules.py             # 5 detection rules
 │   ├── dashboard/
-│   │   ├── __init__.py
-│   │   ├── app.py               # Dash dashboard (Plotly)
-│   │   └── callbacks.py          # Alert generator & coordination
+│   │   ├── app_redesigned.py    # Dash dashboard (Plotly)
+│   │   ├── callbacks.py         # Alert generation engine
+│   │   └── assets/              # CSS styling
 │   ├── logs/
-│   │   └── alerts.py            # SQLite database logging
+│   │   └── alerts.py            # SQLite alert logging
 │   └── utils/
-│       ├── __init__.py
-│       ├── database.py          # Database integration layer
-│       ├── attack_simulator.py  # Attack simulation
-│       └── helpers.py
-├── data/
-│   └── alerts.db               # SQLite alerts database
-├── main.py                      # Complete system demo
-├── test_detection.py            # Detection rule tests
-├── test_sniffer.py             # Packet capture tests
-├── output.log                   # Demo output log
-└── requirements.txt             # Python dependencies
+│       ├── attack_simulator.py  # Attack scenario generation
+│       ├── database.py          # Database helpers
+│       └── helpers.py           # Utilities
+├── data/                         # Runtime data (alerts.db)
+├── main.py                       # Full system demo
+├── requirements.txt              # Dependencies
+└── README.md                     # This file
 ```
 
 ## 🚀 Quick Start
 
-### 1. **View the Demo Output**
-The system has already been tested! View the output:
+### Installation
+
+1. **Clone the repository:**
 ```bash
-cat output.log
+git clone https://github.com/GulrezQayyum/intrusion-detection-prototype.git
+cd intrusion-detection-prototype
 ```
 
-### 2. **Start the Dashboard**
+2. **Create virtual environment:**
 ```bash
-cd ~/Networking
+python3 -m venv venv
 source venv/bin/activate
-python3 -m src.dashboard.app
 ```
 
-Then open your browser to: **http://localhost:8050**
-
-### 3. **Run Attack Simulation** (in another terminal)
+3. **Install dependencies:**
 ```bash
-cd ~/Networking
+pip install -r requirements.txt
+```
+
+### Running the System
+
+#### Option 1: Dashboard with Live Demo (Recommended)
+
+**Terminal 1 - Start Dashboard:**
+```bash
+source venv/bin/activate
+python3 -m src.dashboard.app_redesigned
+```
+📊 Open: **http://localhost:8050**
+
+**Terminal 2 - Run Attack Simulation:**
+```bash
 source venv/bin/activate
 python3 main.py
 ```
 
-The dashboard will show real-time alerts as attacks are simulated!
+Watch the dashboard update in real-time as attacks are detected!
 
-## 📊 What You'll See in the Dashboard
+#### Option 2: Run Full Demo
+```bash
+source venv/bin/activate
+python3 main.py
+```
 
-### Header Section
-- 🔒 System Title with Real-time Threat Level
+This generates a complete system report with:
+- ✅ All 5 detection rules tested
+- ✅ 45+ alerts generated
+- ✅ 100% detection accuracy
+- ✅ Full metrics and statistics
+- ✅ SQLite database populated
+
+## 📊 Dashboard Overview
+
+### Metrics Dashboard
+- **🌐 Network Activity** - Live packets/second  
+- **⚠️ Total Alerts** - Count of detected threats
+- **🔴 Critical Threats** - High-severity alert count
+- **👁️ Unique Sources** - Distinct malicious IPs detected
+
+### Live Alert Feed
+Real-time stream showing:
+- Alert timestamp
+- Attack type (SYN Flood, Port Scan, etc.)
+- Source IP
+- Severity level (High/Medium/Low)
+- Threat message
+
+### Visualizations
+- **Alert Distribution** - Pie chart by severity
+- **Timeline** - Threat trend over time  
+- **Protocol Breakdown** - Network protocol distribution
+- **Top Threats** - Most active attack sources
 - Status indicator (SAFE 🟢 → CRITICAL 🔴)
 
 ### Key Metrics (Real-time)

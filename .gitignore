@@ -43,3 +43,12 @@ Thumbs.db
 *.png
 *.html
 *.pcap
+*.log
+data/alerts.db
+
+# Demo files
+demo_*.py
+DEMO_*.md
+
+# Test files  
+test_*.py

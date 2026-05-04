@@ -1,0 +1,193 @@
+/* === PULSE & GLOW ANIMATIONS === */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(248, 81, 73, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(88, 166, 255, 0.5), inset 0 0 10px rgba(88, 166, 255, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(88, 166, 255, 0.8), inset 0 0 20px rgba(88, 166, 255, 0.4); }
+}
+
+@keyframes danger-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(248, 81, 73, 0.5), inset 0 0 10px rgba(248, 81, 73, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(248, 81, 73, 0.8), inset 0 0 20px rgba(248, 81, 73, 0.4); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+@keyframes slide-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scale-up {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+@keyframes color-shift {
+    0%, 100% { color: #58a6ff; }
+    50% { color: #79c0ff; }
+}
+
+/* === ANIMATED ELEMENTS === */
+.pulse-alert {
+    animation: pulse 2s infinite !important;
+}
+
+.glow-box {
+    animation: glow 2s infinite !important;
+}
+
+.danger-glow {
+    animation: danger-glow 1.5s infinite !important;
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite !important;
+}
+
+.spinning {
+    animation: spin 2s linear infinite !important;
+}
+
+.blink-icon {
+    animation: blink 1.5s infinite !important;
+}
+
+.alert-item {
+    animation: slide-in 0.5s ease-out !important;
+    border-left: 3px solid;
+    transition: all 0.3s ease;
+}
+
+.alert-item:hover {
+    transform: translateX(5px);
+    background-color: rgba(88, 166, 255, 0.1) !important;
+}
+
+.metric-card {
+    animation: scale-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 30px rgba(88, 166, 255, 0.2) !important;
+}
+
+.chart-container {
+    animation: fade-in 0.8s ease-out !important;
+}
+
+.header-title {
+    animation: fade-in 1s ease-out;
+    color: #58a6ff;
+}
+
+.threat-badge {
+    animation: bounce 0.6s ease-in-out !important;
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.threat-badge:hover {
+    transform: scale(1.05) !important;
+}
+
+.threat-badge.pulse-alert {
+    animation: pulse 2s infinite, bounce 0.6s ease-in-out !important;
+}
+
+.threat-badge.blink-icon {
+    animation: blink 1.5s infinite !important;
+}
+
+.architecture-flow {
+    animation: slide-in-left 0.8s ease-out !important;
+}
+
+.architecture-flow div {
+    transition: all 0.3s ease;
+}
+
+.architecture-flow div:hover {
+    transform: scale(1.1) !important;
+    color: #79c0ff !important;
+}
+
+/* === METRIC NUMBER ANIMATION === */
+.metric-number {
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+}
+
+.metric-number.alert {
+    animation: color-shift 1s infinite !important;
+}
+
+/* === STATUS INDICATOR === */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.critical {
+    animation: danger-glow 1.5s infinite;
+}
+
+/* === SMOOTH TRANSITIONS === */
+body {
+    background-color: #0d1117;
+    color: #e6edf3;
+}
+
+/* === CHART ANIMATIONS === */
+.plotly-graph-div {
+    animation: fade-in 1s ease-out;
+}
+
+.js-plotly-plot {
+    animation: scale-up 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}

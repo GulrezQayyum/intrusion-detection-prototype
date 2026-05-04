@@ -53,10 +53,6 @@ def get_alert_db():
     except:
         return None
 
-# Initialize app
-app = dash.Dash(__name__)
-app.title = "IDS - Intrusion Detection System"
-
 # SIMPLIFIED COLOR PALETTE
 COLORS = {
     'bg': '#0d1117',           # Dark background
@@ -73,48 +69,18 @@ COLORS = {
     'border': '#30363d',       # Border color
 }
 
-# CSS for micro animations
-STYLES = '''
-<style>
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(248, 81, 73, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
-    }
-    
-    @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0.3; }
-    }
-    
-    @keyframes slide-in {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .pulse-alert {
-        animation: pulse 2s infinite;
-    }
-    
-    .blink-icon {
-        animation: blink 1.5s infinite;
-    }
-    
-    .alert-item {
-        animation: slide-in 0.3s ease-out;
-    }
-    
-    body {
-        background-color: #0d1117;
-        color: #e6edf3;
-    }
-</style>
-'''
+# CSS for micro animations is now in /assets/styles.css - Dash will load it automatically
+
+# Initialize app
+app = dash.Dash(__name__)
+app.title = "IDS - Intrusion Detection System"
+
+# Store timeline data for historical tracking
+timeline_history = {'x': [], 'y': []}
 
 # ==================== LAYOUT ====================
 
 app.layout = html.Div([
-    html.Div(dangerously_allow_html=True, children=STYLES),
     dcc.Interval(id='interval', interval=500),
     
     html.Div(style={'backgroundColor': COLORS['bg'], 'minHeight': '100vh', 'padding': '24px'}, children=[
@@ -142,13 +108,13 @@ app.layout = html.Div([
                             'fontFamily': '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                         })
                     ]),
-                    html.Div(id='threat-status', style={
+                    html.Div(id='threat-status', className='threat-badge', style={
                         'padding': '12px 20px',
-                        'borderRadius': '8px',
+                        'borderRadius': '20px',
                         'backgroundColor': COLORS['surface'],
-                        'border': f'1px solid {COLORS["border"]}',
+                        'border': f'2px solid {COLORS["border"]}',
                         'fontSize': '14px',
-                        'fontWeight': '500',
+                        'fontWeight': '600',
                     }, children='🟢 Monitoring')
                 ]),
             ]),
@@ -160,22 +126,22 @@ app.layout = html.Div([
                 'gap': '16px',
                 'marginBottom': '32px',
             }, children=[
-                # Metric Card
-                html.Div(style={
-                    'padding': '16px',
+                # Metric Card - Network Activity
+                html.Div(className='metric-card', style={
+                    'padding': '24px',
                     'backgroundColor': COLORS['surface'],
-                    'borderRadius': '8px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'borderRadius': '12px',
+                    'border': f'2px solid {COLORS["primary"]}',
                 }, children=[
-                    html.Div('Network Activity', style={
+                    html.Div('🌐 Network Activity', style={
                         'fontSize': '12px',
                         'fontWeight': '600',
                         'color': COLORS['text_muted'],
                         'textTransform': 'uppercase',
                         'letterSpacing': '0.5px',
                     }),
-                    html.Div(id='metric-pps', style={
-                        'fontSize': '28px',
+                    html.Div(id='metric-pps', className='metric-number', style={
+                        'fontSize': '36px',
                         'fontWeight': '700',
                         'color': COLORS['primary'],
                         'marginTop': '12px',
@@ -183,101 +149,101 @@ app.layout = html.Div([
                     html.Div('packets/sec', style={
                         'fontSize': '11px',
                         'color': COLORS['text_muted'],
-                        'marginTop': '4px',
+                        'marginTop': '8px',
                     })
                 ]),
                 
-                # Metric Card
-                html.Div(style={
-                    'padding': '16px',
+                # Metric Card - Total Alerts
+                html.Div(className='metric-card', style={
+                    'padding': '24px',
                     'backgroundColor': COLORS['surface'],
-                    'borderRadius': '8px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'borderRadius': '12px',
+                    'border': f'2px solid {COLORS["warning"]}',
                 }, children=[
-                    html.Div('Total Alerts', style={
+                    html.Div('⚠️ Total Alerts', style={
                         'fontSize': '12px',
                         'fontWeight': '600',
                         'color': COLORS['text_muted'],
                         'textTransform': 'uppercase',
                         'letterSpacing': '0.5px',
                     }),
-                    html.Div(id='metric-alerts', style={
-                        'fontSize': '28px',
+                    html.Div(id='metric-alerts', className='metric-number', style={
+                        'fontSize': '36px',
                         'fontWeight': '700',
-                        'color': COLORS['danger'],
+                        'color': COLORS['warning'],
                         'marginTop': '12px',
                     }, children='0'),
                     html.Div('detected', style={
                         'fontSize': '11px',
                         'color': COLORS['text_muted'],
-                        'marginTop': '4px',
+                        'marginTop': '8px',
                     })
                 ]),
                 
-                # Metric Card
-                html.Div(style={
-                    'padding': '16px',
+                # Metric Card - High Severity
+                html.Div(className='metric-card danger-glow', style={
+                    'padding': '24px',
                     'backgroundColor': COLORS['surface'],
-                    'borderRadius': '8px',
-                    'border': f'1px solid {COLORS["danger"]}',
+                    'borderRadius': '12px',
+                    'border': f'2px solid {COLORS["danger"]}',
                 }, children=[
-                    html.Div('High Severity', style={
+                    html.Div('🔴 Critical Threats', style={
                         'fontSize': '12px',
                         'fontWeight': '600',
                         'color': COLORS['text_muted'],
                         'textTransform': 'uppercase',
                         'letterSpacing': '0.5px',
                     }),
-                    html.Div(id='metric-high', style={
-                        'fontSize': '28px',
+                    html.Div(id='metric-high', className='metric-number alert', style={
+                        'fontSize': '36px',
                         'fontWeight': '700',
                         'color': COLORS['danger'],
                         'marginTop': '12px',
                     }, children='0'),
-                    html.Div('critical threats', style={
+                    html.Div('high severity', style={
                         'fontSize': '11px',
                         'color': COLORS['text_muted'],
-                        'marginTop': '4px',
+                        'marginTop': '8px',
                     })
                 ]),
                 
-                # Metric Card
-                html.Div(style={
-                    'padding': '16px',
+                # Metric Card - Unique Sources
+                html.Div(className='metric-card', style={
+                    'padding': '24px',
                     'backgroundColor': COLORS['surface'],
-                    'borderRadius': '8px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'borderRadius': '12px',
+                    'border': f'2px solid {COLORS["success"]}',
                 }, children=[
-                    html.Div('Unique Sources', style={
+                    html.Div('👁️ Unique Sources', style={
                         'fontSize': '12px',
                         'fontWeight': '600',
                         'color': COLORS['text_muted'],
                         'textTransform': 'uppercase',
                         'letterSpacing': '0.5px',
                     }),
-                    html.Div(id='metric-ips', style={
-                        'fontSize': '28px',
+                    html.Div(id='metric-ips', className='metric-number', style={
+                        'fontSize': '36px',
                         'fontWeight': '700',
-                        'color': COLORS['warning'],
+                        'color': COLORS['success'],
                         'marginTop': '12px',
                     }, children='0'),
                     html.Div('malicious IPs', style={
                         'fontSize': '11px',
                         'color': COLORS['text_muted'],
-                        'marginTop': '4px',
+                        'marginTop': '8px',
                     })
                 ]),
             ]),
             
             # ==================== HERO SECTION: ALERT STREAM ====================
-            html.Div(style={
+            html.Div(className='glow-box', style={
                 'marginBottom': '32px',
                 'padding': '24px',
                 'backgroundColor': COLORS['surface'],
                 'borderRadius': '12px',
                 'border': f'2px solid {COLORS["primary"]}',
             }, children=[
-                html.H2('Live Threat Alert Stream', style={
+                html.H2('🚨 Live Threat Alert Stream', style={
                     'margin': '0 0 16px 0',
                     'fontSize': '18px',
                     'fontWeight': '600',
@@ -301,14 +267,14 @@ app.layout = html.Div([
             ]),
             
             # ==================== ARCHITECTURE DIAGRAM ====================
-            html.Div(style={
+            html.Div(className='architecture-flow', style={
                 'marginBottom': '32px',
                 'padding': '20px',
                 'backgroundColor': COLORS['surface'],
                 'borderRadius': '12px',
-                'border': f'1px solid {COLORS["border"]}',
+                'border': f'2px solid {COLORS["primary"]}',
             }, children=[
-                html.H3('System Architecture', style={
+                html.H3('⚙️ System Architecture', style={
                     'margin': '0 0 16px 0',
                     'fontSize': '14px',
                     'fontWeight': '600',
@@ -319,15 +285,15 @@ app.layout = html.Div([
                     'justifyContent': 'space-between',
                     'alignItems': 'center',
                     'padding': '16px',
-                    'backgroundColor': 'rgba(88, 166, 255, 0.05)',
+                    'backgroundColor': 'rgba(88, 166, 255, 0.08)',
                     'borderRadius': '8px',
                 }, children=[
                     html.Div('🌐 Network Traffic', style={'fontSize': '13px', 'fontWeight': '500'}),
-                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px'}),
+                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px', 'fontWeight': 'bold'}),
                     html.Div('📦 Packet Inspection', style={'fontSize': '13px', 'fontWeight': '500'}),
-                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px'}),
+                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px', 'fontWeight': 'bold'}),
                     html.Div('🔍 Anomaly Detection', style={'fontSize': '13px', 'fontWeight': '500'}),
-                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px'}),
+                    html.Div('→', style={'color': COLORS['text_muted'], 'fontSize': '16px', 'fontWeight': 'bold'}),
                     html.Div('📊 Alert Dashboard', style={'fontSize': '13px', 'fontWeight': '500', 'color': COLORS['danger']}),
                 ])
             ]),
@@ -340,13 +306,13 @@ app.layout = html.Div([
                 'marginBottom': '24px',
             }, children=[
                 # Network Flow
-                html.Div(style={
+                html.Div(className='chart-container', style={
                     'padding': '20px',
                     'backgroundColor': COLORS['surface'],
                     'borderRadius': '12px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'border': f'2px solid {COLORS["primary"]}',
                 }, children=[
-                    html.H3('Network Topology', style={
+                    html.H3('🗺️ Network Topology', style={
                         'margin': '0 0 16px 0',
                         'fontSize': '14px',
                         'fontWeight': '600',
@@ -356,13 +322,13 @@ app.layout = html.Div([
                 ]),
                 
                 # Severity Distribution
-                html.Div(style={
+                html.Div(className='chart-container', style={
                     'padding': '20px',
                     'backgroundColor': COLORS['surface'],
                     'borderRadius': '12px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'border': f'2px solid {COLORS["danger"]}',
                 }, children=[
-                    html.H3('Alert Severity Distribution', style={
+                    html.H3('🎯 Alert Severity Distribution', style={
                         'margin': '0 0 16px 0',
                         'fontSize': '14px',
                         'fontWeight': '600',
@@ -379,13 +345,13 @@ app.layout = html.Div([
                 'gap': '24px',
             }, children=[
                 # Traffic Timeline
-                html.Div(style={
+                html.Div(className='chart-container', style={
                     'padding': '20px',
                     'backgroundColor': COLORS['surface'],
                     'borderRadius': '12px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'border': f'2px solid {COLORS["primary"]}',
                 }, children=[
-                    html.H3('Network Activity Timeline', style={
+                    html.H3('📈 Network Activity Timeline', style={
                         'margin': '0 0 16px 0',
                         'fontSize': '14px',
                         'fontWeight': '600',
@@ -395,13 +361,13 @@ app.layout = html.Div([
                 ]),
                 
                 # Attack Types
-                html.Div(style={
+                html.Div(className='chart-container', style={
                     'padding': '20px',
                     'backgroundColor': COLORS['surface'],
                     'borderRadius': '12px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'border': f'2px solid {COLORS["warning"]}',
                 }, children=[
-                    html.H3('Detected Attack Types', style={
+                    html.H3('⚔️ Detected Attack Types', style={
                         'margin': '0 0 16px 0',
                         'fontSize': '14px',
                         'fontWeight': '600',
@@ -411,13 +377,13 @@ app.layout = html.Div([
                 ]),
                 
                 # Top Sources
-                html.Div(style={
+                html.Div(className='chart-container', style={
                     'padding': '20px',
                     'backgroundColor': COLORS['surface'],
                     'borderRadius': '12px',
-                    'border': f'1px solid {COLORS["border"]}',
+                    'border': f'2px solid {COLORS["danger"]}',
                 }, children=[
-                    html.H3('Top Suspicious Sources', style={
+                    html.H3('🚨 Top Suspicious Sources', style={
                         'margin': '0 0 16px 0',
                         'fontSize': '14px',
                         'fontWeight': '600',
@@ -442,7 +408,7 @@ THREAT_DESCRIPTIONS = {
 }
 
 @callback(
-    [Output('threat-status', 'children'), Output('threat-status', 'style'),
+    [Output('threat-status', 'children'), Output('threat-status', 'style'), Output('threat-status', 'className'),
      Output('metric-pps', 'children'), Output('metric-alerts', 'children'),
      Output('metric-high', 'children'), Output('metric-ips', 'children')],
     Input('interval', 'n_intervals')
@@ -469,29 +435,33 @@ def update_metrics(n):
         
         status = '🟢 Monitoring'
         color = COLORS['success']
+        animation_class = 'threat-badge'
         if high > 10:
             status = '🔴 Critical'
             color = COLORS['danger']
+            animation_class = 'threat-badge pulse-alert'
         elif total > 20:
             status = '🟡 Elevated'
             color = COLORS['warning']
+            animation_class = 'threat-badge blink-icon'
         elif total > 0:
             status = '🟡 Alert'
             color = COLORS['warning']
+            animation_class = 'threat-badge'
         
         style = {
             'padding': '12px 20px',
-            'borderRadius': '8px',
+            'borderRadius': '20px',
             'backgroundColor': COLORS['surface'],
             'border': f'2px solid {color}',
             'fontSize': '14px',
-            'fontWeight': '500',
+            'fontWeight': '600',
             'color': color,
         }
         
-        return status, style, f'{pps:.0f}', f'{total}', f'{high}', f'{len(top_ips)}'
+        return status, style, animation_class, f'{pps:.0f}', f'{total}', f'{high}', f'{len(top_ips)}'
     except:
-        return '🟢 Monitoring', {}, '0', '0', '0', '0'
+        return '🟢 Monitoring', {}, 'threat-badge', '0', '0', '0', '0'
 
 @callback(Output('alert-stream', 'children'), Input('interval', 'n_intervals'))
 def update_alert_stream(n):
@@ -654,23 +624,44 @@ def update_severity(n):
 
 @callback(Output('timeline', 'figure'), Input('interval', 'n_intervals'))
 def update_timeline(n):
+    global timeline_history
     try:
         if packet_capture:
             cnt = packet_capture.get_statistics().get('packet_count', 0)
-            fig = go.Figure(data=[go.Scatter(
-                y=[cnt], mode='lines+markers',
-                line=dict(color=COLORS['primary'], width=3, shape='spline'),
-                marker=dict(size=10, color=COLORS['danger']),
-                fill='tozeroy', fillcolor=f'rgba(88, 166, 255, 0.1)',
-                hovertemplate='<b>Packets</b>: %{y}<extra></extra>'
-            )])
+            
+            # Add to history (keep last 60 points for 30 seconds of data)
+            timeline_history['x'].append(n)
+            timeline_history['y'].append(cnt)
+            
+            if len(timeline_history['x']) > 60:
+                timeline_history['x'].pop(0)
+                timeline_history['y'].pop(0)
+            
+            # Only show if we have data
+            if len(timeline_history['y']) > 0:
+                fig = go.Figure(data=[go.Scatter(
+                    x=timeline_history['x'],
+                    y=timeline_history['y'],
+                    mode='lines+markers',
+                    line=dict(color=COLORS['primary'], width=3, shape='spline'),
+                    marker=dict(size=6, color=COLORS['danger']),
+                    fill='tozeroy',
+                    fillcolor=f'rgba(88, 166, 255, 0.1)',
+                    hovertemplate='<b>Update #%{x}</b><br><b>Packets</b>: %{y}<extra></extra>'
+                )])
+            else:
+                fig = go.Figure()
             
             fig.update_layout(
-                plot_bgcolor=COLORS['surface'], paper_bgcolor=COLORS['surface'],
-                font=dict(color=COLORS['text']), margin=dict(l=40, r=20, t=10, b=30),
-                showlegend=False, xaxis=dict(showgrid=False),
-                yaxis=dict(showgrid=True, gridwidth=1, gridcolor=COLORS['border']),
-                hovermode='x unified', transition=dict(duration=300)
+                plot_bgcolor=COLORS['surface'],
+                paper_bgcolor=COLORS['surface'],
+                font=dict(color=COLORS['text']),
+                margin=dict(l=40, r=20, t=10, b=30),
+                showlegend=False,
+                xaxis=dict(showgrid=False, title='Updates'),
+                yaxis=dict(showgrid=True, gridwidth=1, gridcolor=COLORS['border'], title='Packet Count'),
+                hovermode='x unified',
+                transition=dict(duration=300)
             )
             return fig
         return go.Figure()
